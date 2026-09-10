@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: web-container
+  labels:
+    app: nginx
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      nodeSelector:
+        workload: web
+
+      containers:
+      - name: nginx
+        image: nginx:latest
+
+        volumeMounts:
+        - name: nginx-storage
+          mountPath: /usr/share/nginx/html
+
+        env:
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: web-configmap
+              key: APP_NAME
+
+        - name: ENV
+          valueFrom:
+            configMapKeyRef:
+              name: web-configmap
+              key: ENVIRONMENT
+
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: web-configmap
+              key: LOG_LEVEL
+
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: web-secret
+              key: USERNAME
+
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: web-secret
+              key: PASSWORD
+
+      volumes:
+      - name: nginx-storage
+
+        persistentVolumeClaim:
+          claimName: nginx-pvc

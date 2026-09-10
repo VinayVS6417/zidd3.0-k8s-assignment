@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: web-configmap
+
+data:
+  APP_NAME: "My Custom NGINX Application"
+  ENVIRONMENT: "DEV"
+  LOG_LEVEL: "DEBUG"
